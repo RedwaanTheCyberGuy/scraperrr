@@ -1,0 +1,29 @@
+Colors
+Primary:
+#00ADB3
+Accent:
+#003439
+Background:
+#FFFFFF
+Text Primary:
+#003439
+Link:
+#003439
+Fonts
+DM Sans(body)
+Roboto(body)
+Typography
+primary: DM Sans
+heading: DM Sans
+h1: 72px
+h2: 56px
+body: 20px
+Spacing
+Base Unit:
+4
+Border Radius:
+8px
+Personality
+Tone: playful
+Energy: medium
+Audience: children and parents interested in coding and robotics education

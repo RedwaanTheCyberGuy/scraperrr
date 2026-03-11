@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scraperrr — AI Intelligence Feed</title>
+  <meta name="description"
+    content="Your real-time AI newsletter intelligence feed. Latest articles from Ben's Bites and The Rundown AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ─── Reset ──────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Brand colours */
+      --blue: #2D5BFF;
+      --blue-dim: rgba(45, 91, 255, 0.15);
+      --blue-glow: rgba(45, 91, 255, 0.3);
+      --dark: #001A39;
+      --pink: #FF2D78;
+      --pink-dim: rgba(255, 45, 120, 0.15);
+
+      /* Surface palette — dark dashboard */
+      --bg: #060D10;
+      --sidebar-bg: #080f12;
+      --bg-card: #0D1A1E;
+      --bg-card2: #122228;
+      --bg-hover: #162A30;
+      --border: rgba(45, 91, 255, 0.1);
+      --border2: rgba(45, 91, 255, 0.2);
+      --border-hover: rgba(45, 91, 255, 0.4);
+
+      /* Text */
+      --text-1: #E8F4F5;
+      --text-2: #7FA8AE;
+      --text-3: #3D6B72;
+
+      /* Source colours */
+      --bens: #FF9F43;
+      --bens-dim: rgba(255, 159, 67, 0.15);
+      --rundown: #2D5BFF;
+      --rundown-dim: rgba(45, 91, 255, 0.12);
+
+      /* Success / danger */
+      --success: #3b82f6;
+      --danger: #e74c3c;
+
+      /* Space */
+      --sidebar-w: 72px;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* Font */
+      --font: 'DM Sans', -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text-1);
+      min-height: 100vh;
+      display: flex;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── Ambient background ─────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(45, 91, 255, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Sidebar ────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 100;
+      gap: 8px;
+    }
+
+    .sidebar-logo {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .sidebar-logo img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .sidebar-item {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--text-3);
+      font-size: 18px;
+      border: 1px solid transparent;
+      position: relative;
+    }
+
+    .sidebar-item:hover {
+      background: var(--bg-card);
+      color: var(--text-2);
+      border-color: var(--border);
+    }
+
+    .sidebar-item.active {
+      background: var(--blue-dim);
+      color: var(--blue);
+      border-color: var(--border2);
+      box-shadow: 0 0 16px var(--blue-glow);
+    }
+
+    .sidebar-item svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .sidebar-spacer {
+      flex: 1;
+    }
+
+    .sidebar-power {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-3);
+      font-size: 18px;
+      transition: var(--transition);
+    }
+
+    .sidebar-power:hover {
+      color: var(--danger);
+    }
+
+    .sidebar-power svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ─── Main Layout ────────────────────────────────── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── Top Bar ────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topbar-logo {
+      height: 34px;
+      object-fit: contain;
+    }
+
+    .topbar-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--border);
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-1);
+      letter-spacing: -0.2px;
+    }
+
+    .topbar-sub {
+      font-size: 12px;
+      color: var(--text-3);
+      font-family: var(--mono);
+      margin-top: 2px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--text-3);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2.5s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    .status-dot.stale {
+      background: var(--text-3);
+      animation: none;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.8);
+      }
+    }
+
+    /* ─── Buttons ────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      white-space: nowrap;
+      letter-spacing: -0.1px;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    .btn-primary:hover {
+      background: #4A72FF;
+      box-shadow: 0 0 24px var(--blue-glow), 0 4px 12px rgba(0, 0, 0, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border-color: var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-card);
+      color: var(--text-1);
+      border-color: var(--border2);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .btn .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    .btn.loading .spinner {
+      display: block;
+    }
+
+    .btn.loading .btn-icon {
+      display: none;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ─── Content Area ───────────────────────────────── */
+    .content {
+      flex: 1;
+      padding: 28px 32px 60px;
+    }
+
+    /* ─── Page Heading ───────────────────────────────── */
+    .page-heading {
+      margin-bottom: 28px;
+    }
+
+    .page-heading h2 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .page-heading p {
+      font-size: 14px;
+      color: var(--text-3);
+      margin-top: 5px;
+      font-family: var(--mono);
+    }
+
+    /* ─── Stats Row ──────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--blue);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .stat-icon.blue {
+      background: var(--blue-dim);
+    }
+
+    .stat-icon.bens {
+      background: var(--bens-dim);
+    }
+
+    .stat-icon.rundown {
+      background: var(--rundown-dim);
+    }
+
+    .stat-icon.pink {
+      background: var(--pink-dim);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-3);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-1);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .stat-value.blue {
+      color: var(--blue);
+    }
+
+    .stat-value.bens {
+      color: var(--bens);
+    }
+
+    .stat-value.success {
+      color: var(--success);
+    }
+
+    /* ─── Controls Row ───────────────────────────────── */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .filter-tabs {
+      display: flex;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      gap: 2px;
+    }
+
+    .filter-tab {
+      padding: 7px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--text-3);
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-tab .count {
+      font-size: 11px;
+      background: var(--bg-card2);
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-family: var(--mono);
+    }
+
+    .filter-tab:hover {
+      color: var(--text-2);
+    }
+
+    .filter-tab.active {
+      background: var(--blue-dim);
+      color: var(--blue);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .filter-tab.active .count {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .source-filters {
+      display: flex;
+      gap: 8px;
+    }
+
+    .source-pill {
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-3);
+    }
+
+    .source-pill:hover {
+      border-color: var(--border2);
+      color: var(--text-2);
+    }
+
+    .source-pill[data-source="all"].active {
+      background: var(--blue-dim);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .source-pill[data-source="bens_bites"].active {
+      background: var(--bens-dim);
+      border-color: var(--bens);
+      color: var(--bens);
+    }
+
+    .source-pill[data-source="ai_rundown"].active {
+      background: var(--rundown-dim);
+      border-color: var(--rundown);
+      color: var(--rundown);
+    }
+
+    /* ─── Article Grid ───────────────────────────────── */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 18px;
+    }
+
+    /* ─── Article Card ───────────────────────────────── */
+    .article-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      transition: var(--transition);
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .article-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), transparent);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .article-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--border);
+      background: var(--bg-hover);
+    }
+
+    .article-card:hover::after {
+      opacity: 1;
+    }
+
+    .article-card.saved {
+      border-color: rgba(45, 91, 255, 0.3);
+      background: linear-gradient(135deg, rgba(45, 91, 255, 0.05), var(--bg-card));
+    }
+
+    .article-card.saved::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 28px 28px 0;
+      border-color: transparent var(--blue) transparent transparent;
+    }
+
+    /* Card header */
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      flex-shrink: 0;
+    }
+
+    .source-badge.bens_bites {
+      background: var(--bens-dim);
+      color: var(--bens);
+      border: 1px solid rgba(255, 159, 67, 0.3);
+    }
+
+    .source-badge.ai_rundown {
+      background: var(--rundown-dim);
+      color: var(--rundown);
+      border: 1px solid rgba(45, 91, 255, 0.3);
+    }
+
+    /* Save button */
+    .save-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      color: var(--text-3);
+      transition: var(--transition);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+    }
+
+    .save-btn:hover {
+      color: var(--blue);
+      background: var(--blue-dim);
+    }
+
+    .save-btn.saved {
+      color: var(--blue);
+    }
+
+    .save-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Like button */
+    .like-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      color: var(--text-3);
+      transition: var(--transition);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+    }
+
+    .like-btn:hover {
+      color: var(--pink);
+      background: var(--pink-dim);
+    }
+
+    .like-btn.liked {
+      color: var(--pink);
+    }
+
+    .like-btn.liked svg {
+      fill: var(--pink);
+      stroke: var(--pink);
+      filter: drop-shadow(0 0 6px rgba(255, 45, 120, 0.5));
+      animation: heartPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes heartPop {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.35);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .like-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Card content */
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--text-1);
+      text-decoration: none;
+      transition: color var(--transition);
+      display: block;
+    }
+
+    .card-title:hover {
+      color: var(--blue);
+    }
+
+    .card-summary {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-2);
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-summary.no-summary {
+      color: var(--text-3);
+      font-style: italic;
+    }
+
+    /* Card tags */
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--bg-card2);
+      color: var(--text-3);
+      letter-spacing: 0.3px;
+      border: 1px solid var(--border);
+    }
+
+    /* Card footer */
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+
+    .card-date {
+      font-size: 11px;
+      color: var(--text-3);
+      font-family: var(--mono);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .card-link {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--blue);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: var(--transition);
+      letter-spacing: -0.1px;
+    }
+
+    .card-link:hover {
+      color: #4A72FF;
+      gap: 7px;
+    }
+
+    /* ─── Empty State ─────────────────────────────────── */
+    .empty-state {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .empty-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--bg-card);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      box-shadow: 0 0 30px var(--blue-glow);
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-2);
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      color: var(--text-3);
+      max-width: 340px;
+      line-height: 1.65;
+    }
+
+    /* ─── Skeleton ────────────────────────────────────── */
+    .skeleton-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 18px;
+    }
+
+    .skeleton-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-card) 0%, var(--bg-card2) 50%, var(--bg-card) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s ease-in-out infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .skeleton-badge {
+      height: 22px;
+      width: 100px;
+      border-radius: 20px;
+    }
+
+    .skeleton-title {
+      height: 19px;
+      width: 85%;
+      border-radius: 6px;
+    }
+
+    .skeleton-text {
+      height: 13px;
+      border-radius: 4px;
+    }
+
+    .skeleton-footer {
+      height: 12px;
+      width: 130px;
+      border-radius: 4px;
+    }
+
+    /* ─── Error Banner ────────────────────────────────── */
+    .error-banner {
+      background: rgba(231, 76, 60, 0.08);
+      border: 1px solid rgba(231, 76, 60, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--danger);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ─── Toast ───────────────────────────────────────── */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .toast {
+      background: var(--bg-card2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+      animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      max-width: 300px;
+    }
+
+    .toast.success {
+      border-left: 3px solid var(--success);
+    }
+
+    .toast.error {
+      border-left: 3px solid var(--danger);
+    }
+
+    .toast.info {
+      border-left: 3px solid var(--blue);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(48px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* ─── Scrollbar ───────────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-card2);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border2);
+    }
+
+    /* ─── Responsive ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .topbar {
+        padding: 16px 20px;
+      }
+
+      .content {
+        padding: 20px 20px 60px;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .articles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .stat-value {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────── -->
+  <nav class="sidebar" aria-label="Sidebar navigation">
+    <div class="sidebar-logo" title="Scraperrr">
+      <img src="/static/robocode_logo.png" alt="RoboCode Logo" style="width:40px; height:40px; object-fit:contain;" />
+    </div>
+
+    <!-- Feed (active) -->
+    <div class="sidebar-item active" title="AI Feed" id="nav-feed">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </svg>
+    </div>
+
+    <!-- Saved -->
+    <div class="sidebar-item" title="Saved Articles" onclick="switchTab('saved')" id="nav-saved">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
+      </svg>
+    </div>
+
+    <!-- Ben's Bites -->
+    <div class="sidebar-item" title="Ben's Bites" onclick="filterSource('bens_bites')" id="nav-bens">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+        <line x1="9" y1="9" x2="9.01" y2="9" />
+        <line x1="15" y1="9" x2="15.01" y2="9" />
+      </svg>
+    </div>
+
+    <!-- Rundown AI -->
+    <div class="sidebar-item" title="The Rundown AI" onclick="filterSource('ai_rundown')" id="nav-rundown">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+      </svg>
+    </div>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-power" title="Refresh Feed" onclick="triggerRefresh()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10" />
+        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+      </svg>
+    </div>
+  </nav>
+
+  <!-- ── Main ─────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-brand">
+        <img src="/static/robocode_logo.png" alt="Scraperrr" class="topbar-logo" />
+        <div class="topbar-divider"></div>
+        <div>
+          <div class="topbar-title">AI Intelligence Feed</div>
+          <div class="topbar-sub">scraperrr.app</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="status-pill" id="lastUpdated">
+          <span class="status-dot stale" id="statusDot"></span>
+          <span id="lastUpdatedText">Connecting…</span>
+        </div>
+        <button class="btn btn-ghost" onclick="triggerRefresh()" id="refreshBtn">
+          <span class="btn-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10" />
+              <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+            </svg>
+          </span>
+          <span class="spinner"></span>
+          Refresh
+        </button>
+        <button class="btn btn-primary" onclick="triggerRefresh()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Scrape Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Page Heading -->
+      <div class="page-heading">
+        <h2>Today's AI Digest</h2>
+        <p id="pageSubtitle">Loading latest articles from your sources…</p>
+      </div>
+
+      <!-- Error Banner -->
+      <div class="error-banner" id="errorBanner" style="display:none">
+        ⚠ <span id="errorText"></span>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" id="statsBar" style="display:none">
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D5BFF" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16v16H4z" />
+              <path d="M4 10h16" />
+              <path d="M10 4v16" />
+            </svg>
+          </div>
+          <div class="stat-label">Total Articles</div>
+          <div class="stat-value blue" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon bens">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF9F43" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+              <line x1="9" y1="9" x2="9.01" y2="9" />
+              <line x1="15" y1="9" x2="15.01" y2="9" />
+            </svg>
+          </div>
+          <div class="stat-label">Ben's Bites</div>
+          <div class="stat-value bens" id="statBens">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon rundown">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D5BFF" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+          </div>
+          <div class="stat-label">The Rundown AI</div>
+          <div class="stat-value" style="color:var(--rundown)" id="statRundown">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon pink">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF2D78" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
+            </svg>
+          </div>
+          <div class="stat-label">Saved Articles</div>
+          <div class="stat-value success" id="statSaved">0</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls" id="controls" style="display:none">
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-tab="all" onclick="switchTab('all')">
+            All <span class="count" id="tabCountAll">0</span>
+          </button>
+          <button class="filter-tab" data-tab="saved" onclick="switchTab('saved')">
+            ✦ Saved <span class="count" id="tabCountSaved">0</span>
+          </button>
+        </div>
+        <div class="source-filters">
+          <button class="source-pill active" data-source="all" onclick="filterSource('all')">All Sources</button>
+          <button class="source-pill" data-source="bens_bites" onclick="filterSource('bens_bites')">Ben's Bites</button>
+          <button class="source-pill" data-source="ai_rundown" onclick="filterSource('ai_rundown')">The Rundown
+            AI</button>
+        </div>
+      </div>
+
+      <!-- Articles Container -->
+      <div id="articlesContainer">
+        <!-- Skeleton -->
+        <div class="skeleton-grid" id="skeletonGrid">
+          <div class="skeleton-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="skeleton skeleton-badge"></div>
+            </div>
+            <div class="skeleton skeleton-title" style="margin-top:4px"></div>
+            <div class="skeleton skeleton-text" style="width:100%;margin-top:2px"></div>
+            <div class="skeleton skeleton-text" style="width:88%"></div>
+            <div class="skeleton skeleton-text" style="width:72%"></div>
+            <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
+              <div class="skeleton skeleton-footer"></div>
+            </div>
+          </div>
+          <div class="skeleton-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="skeleton skeleton-badge"></div>
+            </div>
+            <div class="skeleton skeleton-title" style="margin-top:4px"></div>
+            <div class="skeleton skeleton-text" style="width:100%;margin-top:2px"></div>
+            <div class="skeleton skeleton-text" style="width:90%"></div>
+            <div class="skeleton skeleton-text" style="width:65%"></div>
+            <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
+              <div class="skeleton skeleton-footer"></div>
+            </div>
+          </div>
+          <div class="skeleton-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="skeleton skeleton-badge"></div>
+            </div>
+            <div class="skeleton skeleton-title" style="margin-top:4px"></div>
+            <div class="skeleton skeleton-text" style="width:100%;margin-top:2px"></div>
+            <div class="skeleton skeleton-text" style="width:82%"></div>
+            <div class="skeleton skeleton-text" style="width:70%"></div>
+            <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
+              <div class="skeleton skeleton-footer"></div>
+            </div>
+          </div>
+          <div class="skeleton-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="skeleton skeleton-badge"></div>
+            </div>
+            <div class="skeleton skeleton-title" style="margin-top:4px"></div>
+            <div class="skeleton skeleton-text" style="width:100%;margin-top:2px"></div>
+            <div class="skeleton skeleton-text" style="width:94%"></div>
+            <div class="skeleton skeleton-text" style="width:78%"></div>
+            <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
+              <div class="skeleton skeleton-footer"></div>
+            </div>
+          </div>
+          <div class="skeleton-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="skeleton skeleton-badge"></div>
+            </div>
+            <div class="skeleton skeleton-title" style="margin-top:4px"></div>
+            <div class="skeleton skeleton-text" style="width:100%;margin-top:2px"></div>
+            <div class="skeleton skeleton-text" style="width:85%"></div>
+            <div class="skeleton skeleton-text" style="width:60%"></div>
+            <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
+              <div class="skeleton skeleton-footer"></div>
+            </div>
+          </div>
+          <div class="skeleton-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="skeleton skeleton-badge"></div>
+            </div>
+            <div class="skeleton skeleton-title" style="margin-top:4px"></div>
+            <div class="skeleton skeleton-text" style="width:100%;margin-top:2px"></div>
+            <div class="skeleton skeleton-text" style="width:88%"></div>
+            <div class="skeleton skeleton-text" style="width:75%"></div>
+            <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
+              <div class="skeleton skeleton-footer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="articles-grid" id="articlesGrid" style="display:none"></div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+
+  <!-- Toasts -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // ─── State ─────────────────────────────────────────────────────────────
+    let allArticles = [];
+    let savedIds = new Set();
+    let likedIds = new Set();
+    let activeTab = 'all';
+    let activeSource = 'all';
+    const STORAGE_KEY = 'scraperrr_saved_ids';
+    const LIKE_KEY = 'scraperrr_liked_ids';
+
+    // ─── LocalStorage ──────────────────────────────────────────────────────
+    function loadSavedIds() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) savedIds = new Set(JSON.parse(raw));
+      } catch (e) { savedIds = new Set(); }
+    }
+
+    function persistSavedIds() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...savedIds]));
+      updateStats();
+      updateTabCounts();
+    }
+
+    function loadLikedIds() {
+      try {
+        const raw = localStorage.getItem(LIKE_KEY);
+        if (raw) likedIds = new Set(JSON.parse(raw));
+      } catch (e) { likedIds = new Set(); }
+    }
+
+    function persistLikedIds() {
+      localStorage.setItem(LIKE_KEY, JSON.stringify([...likedIds]));
+    }
+
+    // ─── API ───────────────────────────────────────────────────────────────
+    async function fetchArticles() {
+      const res = await fetch('/api/articles');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    async function triggerRefresh() {
+      const btn = document.getElementById('refreshBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+      showToast('Scraping the latest AI news…', 'info');
+
+      try {
+        const res = await fetch('/api/refresh', { method: 'POST' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        processData(data);
+        showToast(`🚀 Found ${data.total_count} articles!`, 'success');
+      } catch (e) {
+        showToast('Refresh failed. Check the server.', 'error');
+      } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    }
+
+    // ─── Data Processing ───────────────────────────────────────────────────
+    function processData(data) {
+      allArticles = data.articles || [];
+      const lastFetched = data.last_fetched;
+
+      const dot = document.getElementById('statusDot');
+      const txt = document.getElementById('lastUpdatedText');
+      const subtitle = document.getElementById('pageSubtitle');
+
+      if (lastFetched) {
+        const d = new Date(lastFetched);
+        const diff = Date.now() - d.getTime();
+        const mins = Math.floor(diff / 60000);
+        const hrs = Math.floor(diff / 3600000);
+        const label = mins < 1 ? 'just now' :
+          mins < 60 ? `${mins}m ago` :
+            hrs < 24 ? `${hrs}h ago` :
+              d.toLocaleDateString();
+        txt.textContent = `Updated ${label}`;
+        dot.classList.remove('stale');
+      } else {
+        txt.textContent = 'Never updated';
+        dot.classList.add('stale');
+      }
+
+      subtitle.textContent = `${allArticles.length} articles from Ben's Bites & The Rundown AI — last 24 hours`;
+
+      if (data.errors && data.errors.length > 0) {
+        document.getElementById('errorBanner').style.display = 'flex';
+        document.getElementById('errorText').textContent = data.errors.join(' | ');
+      } else {
+        document.getElementById('errorBanner').style.display = 'none';
+      }
+
+      document.getElementById('skeletonGrid').style.display = 'none';
+      document.getElementById('articlesGrid').style.display = 'grid';
+      document.getElementById('statsBar').style.display = 'grid';
+      document.getElementById('controls').style.display = 'flex';
+
+      updateStats();
+      updateTabCounts();
+      renderArticles();
+    }
+
+    // ─── Stats ─────────────────────────────────────────────────────────────
+    function updateStats() {
+      document.getElementById('statTotal').textContent = allArticles.length;
+      document.getElementById('statBens').textContent = allArticles.filter(a => a.source === 'bens_bites').length;
+      document.getElementById('statRundown').textContent = allArticles.filter(a => a.source === 'ai_rundown').length;
+      document.getElementById('statSaved').textContent = savedIds.size;
+    }
+
+    function updateTabCounts() {
+      document.getElementById('tabCountAll').textContent = allArticles.length;
+      document.getElementById('tabCountSaved').textContent = savedIds.size;
+    }
+
+    // ─── Filtering ─────────────────────────────────────────────────────────
+    function getFilteredArticles() {
+      let articles = allArticles;
+      if (activeTab === 'saved') articles = articles.filter(a => savedIds.has(a.id));
+      if (activeSource !== 'all') articles = articles.filter(a => a.source === activeSource);
+      return articles;
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+      // Sync sidebar
+      document.getElementById('nav-feed').classList.toggle('active', tab === 'all');
+      document.getElementById('nav-saved').classList.toggle('active', tab === 'saved');
+      renderArticles();
+    }
+
+    function filterSource(source) {
+      activeSource = source;
+      document.querySelectorAll('.source-pill').forEach(p => p.classList.toggle('active', p.dataset.source === source));
+      // Sync sidebar
+      document.getElementById('nav-bens').classList.toggle('active', source === 'bens_bites');
+      document.getElementById('nav-rundown').classList.toggle('active', source === 'ai_rundown');
+      if (source === 'all') {
+        document.getElementById('nav-feed').classList.add('active');
+        document.getElementById('nav-bens').classList.remove('active');
+        document.getElementById('nav-rundown').classList.remove('active');
+      }
+      renderArticles();
+    }
+
+    // ─── Render ────────────────────────────────────────────────────────────
+    function formatDate(isoStr) {
+      if (!isoStr) return 'Unknown date';
+      const d = new Date(isoStr);
+      const now = new Date();
+      const diff = now - d;
+      const mins = Math.floor(diff / 60000);
+      const hrs = Math.floor(diff / 3600000);
+      if (mins < 60) return `${mins}m ago`;
+      if (hrs < 24) return `${hrs}h ago`;
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function sourceLabel(source) {
+      return { bens_bites: "Ben's Bites", ai_rundown: "The Rundown AI" }[source] || source;
+    }
+
+    function renderArticles() {
+      const grid = document.getElementById('articlesGrid');
+      const articles = getFilteredArticles();
+
+      if (articles.length === 0) {
+        grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">${activeTab === 'saved' ? '✦' : '🤖'}</div>
+        <h3>${activeTab === 'saved' ? 'No saved articles yet' : 'No articles found'}</h3>
+        <p>${activeTab === 'saved'
+            ? 'Tap the bookmark on any article to save it for later.'
+            : 'No articles in the last 24 hours. Try refreshing!'}</p>
+        ${activeTab !== 'saved' ? `<button class="btn btn-primary" onclick="triggerRefresh()">🚀 Scrape Now</button>` : ''}
+      </div>`;
+        return;
+      }
+
+      grid.innerHTML = articles.map(a => {
+        const isSaved = savedIds.has(a.id);
+        const isLiked = likedIds.has(a.id);
+
+        const bookmarkFilled = `<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M5 3h14a1 1 0 011 1v17.5l-8-4-8 4V4a1 1 0 011-1z"/></svg>`;
+        const bookmarkEmpty = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>`;
+        const heartFilled = `<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`;
+        const heartEmpty = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`;
+
+        const tagsHtml = (a.tags && a.tags.length)
+          ? `<div class="card-tags">${a.tags.slice(0, 4).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>`
+          : '';
+
+        const summaryText = a.summary
+          ? `<p class="card-summary">${escapeHtml(a.summary)}</p>`
+          : `<p class="card-summary no-summary">No summary available for this article.</p>`;
+
+        return `
+    <div class="article-card ${isSaved ? 'saved' : ''}" id="card-${a.id}">
+      <div class="card-header">
+        <span class="source-badge ${a.source}">${sourceLabel(a.source)}</span>
+        <div style="display:flex;gap:2px;">
+          <button class="like-btn ${isLiked ? 'liked' : ''}"
+                  onclick="toggleLike('${a.id}')"
+                  title="${isLiked ? 'Unlike' : 'Like this article'}">
+            ${isLiked ? heartFilled : heartEmpty}
+          </button>
+          <button class="save-btn ${isSaved ? 'saved' : ''}"
+                  onclick="toggleSave('${a.id}')"
+                  title="${isSaved ? 'Remove from saved' : 'Save article'}">
+            ${isSaved ? bookmarkFilled : bookmarkEmpty}
+          </button>
+        </div>
+      </div>
+      <a class="card-title" href="${escapeHtml(a.url)}" target="_blank" rel="noopener noreferrer">
+        ${escapeHtml(a.title || 'Untitled')}
+      </a>
+      ${summaryText}
+      ${tagsHtml}
+      <div class="card-footer">
+        <span class="card-date">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${formatDate(a.published_at)}
+        </span>
+        <a class="card-link" href="${escapeHtml(a.url)}" target="_blank" rel="noopener noreferrer">
+          Read →
+        </a>
+      </div>
+    </div>`;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ─── Save / Unsave ─────────────────────────────────────────────────────
+    function toggleSave(id) {
+      if (savedIds.has(id)) {
+        savedIds.delete(id);
+        showToast('Removed from saved.', 'info');
+      } else {
+        savedIds.add(id);
+        showToast('Article saved! ✦', 'success');
+      }
+      persistSavedIds();
+
+      const card = document.getElementById(`card-${id}`);
+      if (card) {
+        const isSaved = savedIds.has(id);
+        card.classList.toggle('saved', isSaved);
+        const btn = card.querySelector('.save-btn');
+        if (btn) {
+          btn.classList.toggle('saved', isSaved);
+          btn.title = isSaved ? 'Remove from saved' : 'Save article';
+          btn.innerHTML = isSaved
+            ? `<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M5 3h14a1 1 0 011 1v17.5l-8-4-8 4V4a1 1 0 011-1z"/></svg>`
+            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>`;
+        }
+        if (activeTab === 'saved' && !isSaved) {
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.95)';
+          card.style.transition = '0.3s ease';
+          setTimeout(() => renderArticles(), 300);
+        }
+      }
+    }
+
+    // ─── Like / Unlike ─────────────────────────────────────────────────────
+    function toggleLike(id) {
+      if (likedIds.has(id)) {
+        likedIds.delete(id);
+        showToast('Like removed.', 'info');
+      } else {
+        likedIds.add(id);
+        showToast('❤️ Liked!', 'success');
+      }
+      persistLikedIds();
+
+      const card = document.getElementById(`card-${id}`);
+      if (card) {
+        const isLiked = likedIds.has(id);
+        const btn = card.querySelector('.like-btn');
+        if (btn) {
+          btn.classList.toggle('liked', isLiked);
+          btn.title = isLiked ? 'Unlike' : 'Like this article';
+          btn.innerHTML = isLiked
+            ? `<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`
+            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`;
+        }
+      }
+    }
+
+    // ─── Toast ─────────────────────────────────────────────────────────────
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icons = { success: '✓', error: '✕', info: 'ℹ' };
+      toast.innerHTML = `<span>${icons[type] || 'ℹ'}</span> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(48px)';
+        toast.style.transition = '0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    // ─── Init ──────────────────────────────────────────────────────────────
+    (async function init() {
+      loadSavedIds();
+      loadLikedIds();
+      try {
+        const data = await fetchArticles();
+        processData(data);
+      } catch (e) {
+        document.getElementById('skeletonGrid').style.display = 'none';
+        document.getElementById('articlesGrid').style.display = 'grid';
+        document.getElementById('pageSubtitle').textContent = 'Make sure the Flask server is running on port 5000.';
+        document.getElementById('articlesGrid').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🤖</div>
+        <h3>Could not connect to server</h3>
+        <p>Make sure the Flask server is running. Start it with <code style="background:var(--bg-card2);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:12px">./start.sh</code></p>
+        <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
+      </div>`;
+        showToast('Cannot reach server. Is Flask running?', 'error');
+      }
+    })();
+  </script>
+</body>
+
+</html>
