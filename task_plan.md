@@ -25,8 +25,8 @@
 - [x] Research to complete in Phase 2
 
 ### Phase 2: Link (Connectivity)
-- [ ] Research Ben's Bytes URL structure and archive page
-- [ ] Research The AI Rundown URL structure and archive page
+- [x] Research Ben's Bytes URL structure and archive page
+- [x] Research The AI Rundown URL structure and archive page
 - [ ] Verify pages are publicly accessible (no auth wall)
 - [ ] Identify HTML selectors for title, date, summary, link
 - [ ] Log findings in findings.md
