@@ -2,8 +2,8 @@
 Tool: serve_dashboard.py
 Layer 3 — Flask server that serves the dashboard and /api/articles endpoint
 
-When running locally: runs scrapers on startup + every 24h via APScheduler.
-When on Vercel (serverless): serves dashboard + API only (no scheduler, no auto-scrape).
+Local:  uses .tmp/ for storage, APScheduler for 24h cron
+Vercel: uses /tmp/ for storage, scrapers run on-demand via /api/refresh
 """
 
 import json
@@ -20,12 +20,12 @@ from flask import Flask, jsonify, send_from_directory
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
-TMP_DIR = ROOT / ".tmp"
+IS_SERVERLESS = bool(os.environ.get("VERCEL"))
+
+# Use /tmp on Vercel (writable), .tmp/ locally
+TMP_DIR = Path("/tmp") if IS_SERVERLESS else ROOT / ".tmp"
 ARTICLES_FILE = TMP_DIR / "all_articles.json"
 STATIC_DIR = ROOT / "static"
-
-# Detect serverless environment
-IS_SERVERLESS = bool(os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"))
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [Server] %(message)s")
 log = logging.getLogger(__name__)
@@ -35,17 +35,15 @@ _scraper_lock = threading.Lock()
 
 
 def run_scrapers():
-    """Run all scrapers. Skipped automatically in serverless environments."""
-    if IS_SERVERLESS:
-        log.warning("Scraper run skipped — serverless environment detected.")
-        return {"total_count": 0, "skipped": True}
-
     with _scraper_lock:
         log.info("Running all scrapers...")
         try:
             from tools.run_all_scrapers import run
             result = run()
             log.info(f"Scrapers complete. {result['total_count']} articles found.")
+            # Save to /tmp (Vercel) or .tmp/ (local)
+            TMP_DIR.mkdir(exist_ok=True)
+            ARTICLES_FILE.write_text(json.dumps(result))
             return result
         except Exception as e:
             log.error(f"Scraper run failed: {e}")
@@ -75,15 +73,7 @@ def get_articles():
 
 @app.route("/api/refresh", methods=["POST"])
 def refresh():
-    if IS_SERVERLESS:
-        return jsonify({
-            "error": "Scraping is not available in serverless mode. "
-                     "Use an external scheduler or Vercel Cron Jobs."
-        }), 503
-
-    thread = threading.Thread(target=run_scrapers, daemon=True)
-    thread.start()
-    thread.join(timeout=120)
+    run_scrapers()
     data = load_articles()
     return jsonify(data)
 
@@ -100,7 +90,6 @@ def status():
     })
 
 
-# --- Local-only startup logic ---
 if __name__ == "__main__":
     TMP_DIR.mkdir(exist_ok=True)
 
@@ -110,7 +99,6 @@ if __name__ == "__main__":
     else:
         log.info("Cached articles found. Skipping initial scrape.")
 
-    # APScheduler only runs locally
     from apscheduler.schedulers.background import BackgroundScheduler
     scheduler = BackgroundScheduler()
     scheduler.add_job(run_scrapers, "interval", hours=24, id="scrape_job")
