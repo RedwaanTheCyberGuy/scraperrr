@@ -9,7 +9,7 @@ import json
 import time
 import uuid
 import logging
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 

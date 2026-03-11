@@ -1627,7 +1627,7 @@
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
       const icons = { success: '✓', error: '✕', info: 'ℹ' };
-      toast.innerHTML = `<span>${icons[type] || 'ℹ'}</span> ${message}`;
+      toast.innerHTML = `<span>${icons[type] || 'ℹ'}</span> ${escapeHtml(message)}`;
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
