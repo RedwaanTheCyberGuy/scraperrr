@@ -1410,7 +1410,7 @@
         dot.classList.add('stale');
       }
 
-      subtitle.textContent = `${allArticles.length} articles from Ben's Bites & The Rundown AI — last 24 hours`;
+      subtitle.textContent = `${allArticles.length} articles from Ben's Bites & The Rundown AI — last 7 days`;
 
       if (data.errors && data.errors.length > 0) {
         document.getElementById('errorBanner').style.display = 'flex';
@@ -1501,7 +1501,7 @@
         <h3>${activeTab === 'saved' ? 'No saved articles yet' : 'No articles found'}</h3>
         <p>${activeTab === 'saved'
             ? 'Tap the bookmark on any article to save it for later.'
-            : 'No articles in the last 24 hours. Try refreshing!'}</p>
+            : 'No articles in the last 7 days. Try refreshing!'}</p>
         ${activeTab !== 'saved' ? `<button class="btn btn-primary" onclick="triggerRefresh()">🚀 Scrape Now</button>` : ''}
       </div>`;
         return;
