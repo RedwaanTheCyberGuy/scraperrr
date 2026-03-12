@@ -237,7 +237,7 @@ def scrape_post(url: str, cutoff: datetime) -> dict | None:
 def run() -> dict:
     TMP_DIR.mkdir(exist_ok=True)
     run_at = datetime.now(timezone.utc)
-    cutoff = run_at - timedelta(hours=24)
+    cutoff = run_at - timedelta(days=7)
     errors = []
     articles = []
 
@@ -267,7 +267,7 @@ def run() -> dict:
         if article:
             articles.append(article)
 
-    log.info(f"Scraped {len(articles)} article(s) from The Rundown AI in last 24h.")
+    log.info(f"Scraped {len(articles)} article(s) from The Rundown AI in last 7 days.")
     result = {
         "source": "ai_rundown",
         "run_at": run_at.isoformat(),

@@ -2,7 +2,7 @@
 Tool: serve_dashboard.py
 Layer 3 — Flask server that serves the dashboard and /api/articles endpoint
 
-Local:  uses .tmp/ for storage, APScheduler for 24h cron
+Local:  uses .tmp/ for storage, APScheduler for weekly cron
 Vercel: uses /tmp/ for storage, scrapers run on-demand via /api/refresh
 """
 
@@ -101,9 +101,9 @@ if __name__ == "__main__":
 
     from apscheduler.schedulers.background import BackgroundScheduler
     scheduler = BackgroundScheduler()
-    scheduler.add_job(run_scrapers, "interval", hours=24, id="scrape_job")
+    scheduler.add_job(run_scrapers, "interval", days=7, id="scrape_job")
     scheduler.start()
-    log.info("Scheduler started (24h interval).")
+    log.info("Scheduler started (7-day interval).")
 
     log.info("Starting dashboard at http://localhost:5001")
     try:

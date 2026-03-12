@@ -25,9 +25,9 @@ image = (
 app = modal.App("scraperrr-orchestrator", image=image)
 
 # Define the scheduled function
-# Runs every 24 hours
+# Runs every 7 days (1 week)
 @app.function(
-    schedule=modal.Period(hours=24),
+    schedule=modal.Period(days=7),
     timeout=600, # 10 minutes timeout to be safe
 )
 def run_scrapers_job():
