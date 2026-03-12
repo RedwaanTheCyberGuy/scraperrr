@@ -1,15 +1,22 @@
 """
 Tool: run_all_scrapers.py
-Layer 3 — Orchestrates all scrapers and writes merged output to .tmp/all_articles.json
+Layer 3 — Orchestrates all scrapers and writes merged output to all_articles.json
 """
 
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
 log = logging.getLogger(__name__)
-TMP_DIR = Path(__file__).parent.parent / ".tmp"
+
+# Use /tmp on Vercel (read-only filesystem), .tmp/ locally
+if os.environ.get("VERCEL"):
+    TMP_DIR = Path("/tmp")
+else:
+    TMP_DIR = Path(__file__).parent.parent / ".tmp"
+
 OUTPUT_FILE = TMP_DIR / "all_articles.json"
 
 
