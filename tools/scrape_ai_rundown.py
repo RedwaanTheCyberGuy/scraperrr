@@ -6,6 +6,7 @@ Output: .tmp/ai_rundown_raw.json (ScraperRunResult schema)
 """
 
 import json
+import os
 import time
 import uuid
 import logging
@@ -22,7 +23,12 @@ log = logging.getLogger(__name__)
 BASE_URL = "https://www.therundown.ai"
 SITEMAP_URL = f"{BASE_URL}/sitemap.xml"
 ARCHIVE_URL = f"{BASE_URL}/archive"
-TMP_DIR = Path(__file__).parent.parent / ".tmp"
+
+if os.environ.get("VERCEL"):
+    TMP_DIR = Path("/tmp")
+else:
+    TMP_DIR = Path(__file__).parent.parent / ".tmp"
+
 OUTPUT_FILE = TMP_DIR / "ai_rundown_raw.json"
 MAX_ARTICLES = 20
 REQUEST_DELAY = 1.5
